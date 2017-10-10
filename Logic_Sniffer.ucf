@@ -1,0 +1,260 @@
+##################################################################################
+## la.ucf
+##
+## Author: Michael "Mr. Sump" Poppitz
+##
+## Details: http://sump.org/projects/analyzer/
+##
+## Contains assignment and iostandard information for
+## all used pins as well as timing and area constraints.
+##
+## MODIFIED for use of Xilinx Spartan 3e Starter Kit
+## MODIFIED for use with ButterFly Platform S3E Cocoon
+## MODIFIED for use with Logic Sniffer
+## Visit www.GadgetFactory.net or www.dangerousprototypes.com for more information
+##################################################################################
+# Crystal Clock - use 50MHz onboard oscillator
+NET "bf_clock" IOSTANDARD = LVCMOS33;
+NET "bf_clock" LOC = P89;
+NET "bf_clock" TNM_NET = "bf_clock";
+TIMESPEC TS_bf_clock = PERIOD "bf_clock" 31.25 ns HIGH 50%;
+PIN "pll_wrapper/DCM_baseClock.CLKFX" TNM = "coreclk";
+
+# external Clock - use Auxiliary clock
+NET "extClockIn" IOSTANDARD = LVCMOS33 | PULLDOWN;
+NET "extClockIn" LOC = P85;
+NET "extClockIn" TNM_NET = "extClockIn";
+TIMESPEC TS_extClockIn = PERIOD "extClockIn" 10 ns HIGH 50%;
+
+NET "extTriggerIn" IOSTANDARD = LVCMOS33 | PULLDOWN;
+NET "extTriggerIn" LOC = P83;
+NET "extTriggerIn" OFFSET = IN 7 ns VALID 9 ns BEFORE "bf_clock" RISING;
+
+NET "extClockOut" IOSTANDARD = LVCMOS33;
+NET "extClockOut" SLEW = FAST;
+NET "extClockOut" DRIVE = 8;
+NET "extClockOut" LOC = P78;
+
+NET "extTriggerOut" IOSTANDARD = LVCMOS33;
+NET "extTriggerOut" SLEW = FAST;
+NET "extTriggerOut" DRIVE = 8;
+NET "extTriggerOut" LOC = P63;
+
+#--Inside row numbering
+NET "indata[0]" IOSTANDARD = LVCMOS33;
+NET "indata[0]" SLEW = SLOW;
+NET "indata[0]" DRIVE = 2;
+NET "indata[0]" LOC = P18;
+NET "indata[1]" IOSTANDARD = LVCMOS33;
+NET "indata[1]" SLEW = SLOW;
+NET "indata[1]" DRIVE = 2;
+NET "indata[1]" LOC = P23;
+NET "indata[2]" IOSTANDARD = LVCMOS33;
+NET "indata[2]" SLEW = SLOW;
+NET "indata[2]" DRIVE = 2;
+NET "indata[2]" LOC = P26;
+NET "indata[3]" IOSTANDARD = LVCMOS33;
+NET "indata[3]" SLEW = SLOW;
+NET "indata[3]" DRIVE = 2;
+NET "indata[3]" LOC = P33;
+NET "indata[4]" IOSTANDARD = LVCMOS33;
+NET "indata[4]" SLEW = SLOW;
+NET "indata[4]" DRIVE = 2;
+NET "indata[4]" LOC = P35;
+NET "indata[5]" IOSTANDARD = LVCMOS33;
+NET "indata[5]" SLEW = SLOW;
+NET "indata[5]" DRIVE = 2;
+NET "indata[5]" LOC = P40;
+NET "indata[6]" IOSTANDARD = LVCMOS33;
+NET "indata[6]" SLEW = SLOW;
+NET "indata[6]" DRIVE = 2;
+NET "indata[6]" LOC = P53;
+NET "indata[7]" IOSTANDARD = LVCMOS33;
+NET "indata[7]" SLEW = SLOW;
+NET "indata[7]" DRIVE = 2;
+NET "indata[7]" LOC = P57;
+NET "indata[8]" IOSTANDARD = LVCMOS33;
+NET "indata[8]" SLEW = SLOW;
+NET "indata[8]" DRIVE = 2;
+NET "indata[8]" LOC = P60;
+NET "indata[9]" IOSTANDARD = LVCMOS33;
+NET "indata[9]" SLEW = SLOW;
+NET "indata[9]" DRIVE = 2;
+NET "indata[9]" LOC = P62;
+NET "indata[10]" IOSTANDARD = LVCMOS33;
+NET "indata[10]" SLEW = SLOW;
+NET "indata[10]" DRIVE = 2;
+NET "indata[10]" LOC = P65;
+NET "indata[11]" IOSTANDARD = LVCMOS33;
+NET "indata[11]" SLEW = SLOW;
+NET "indata[11]" DRIVE = 2;
+NET "indata[11]" LOC = P67;
+NET "indata[12]" IOSTANDARD = LVCMOS33;
+NET "indata[12]" SLEW = SLOW;
+NET "indata[12]" DRIVE = 2;
+NET "indata[12]" LOC = P70;
+NET "indata[13]" IOSTANDARD = LVCMOS33;
+NET "indata[13]" SLEW = SLOW;
+NET "indata[13]" DRIVE = 2;
+NET "indata[13]" LOC = P79;
+NET "indata[14]" IOSTANDARD = LVCMOS33;
+NET "indata[14]" SLEW = SLOW;
+NET "indata[14]" DRIVE = 2;
+NET "indata[14]" LOC = P84;
+NET "indata[15]" IOSTANDARD = LVCMOS33;
+NET "indata[15]" SLEW = SLOW;
+NET "indata[15]" DRIVE = 2;
+NET "indata[15]" LOC = P86;
+
+NET "indata[16]" IOSTANDARD = LVCMOS33 | PULLDOWN;
+NET "indata[16]" SLEW = FAST;
+NET "indata[16]" DRIVE = 8;
+NET "indata[16]" LOC = P91;
+NET "indata[17]" IOSTANDARD = LVCMOS33 | PULLDOWN;
+NET "indata[17]" SLEW = FAST;
+NET "indata[17]" DRIVE = 8;
+NET "indata[17]" LOC = P92;
+NET "indata[18]" IOSTANDARD = LVCMOS33 | PULLDOWN;
+NET "indata[18]" SLEW = FAST;
+NET "indata[18]" DRIVE = 8;
+NET "indata[18]" LOC = P94;
+NET "indata[19]" IOSTANDARD = LVCMOS33 | PULLDOWN;
+NET "indata[19]" SLEW = FAST;
+NET "indata[19]" DRIVE = 8;
+NET "indata[19]" LOC = P95;
+NET "indata[20]" IOSTANDARD = LVCMOS33 | PULLDOWN;
+NET "indata[20]" SLEW = FAST;
+NET "indata[20]" DRIVE = 8;
+NET "indata[20]" LOC = P98;
+NET "indata[21]" IOSTANDARD = LVCMOS33 | PULLDOWN;
+NET "indata[21]" SLEW = FAST;
+NET "indata[21]" DRIVE = 8;
+NET "indata[21]" LOC = P2;
+NET "indata[22]" IOSTANDARD = LVCMOS33 | PULLDOWN;
+NET "indata[22]" SLEW = FAST;
+NET "indata[22]" DRIVE = 8;
+NET "indata[22]" LOC = P3;
+NET "indata[23]" IOSTANDARD = LVCMOS33 | PULLDOWN;
+NET "indata[23]" SLEW = FAST;
+NET "indata[23]" DRIVE = 8;
+NET "indata[23]" LOC = P4;
+NET "indata[24]" IOSTANDARD = LVCMOS33 | PULLDOWN;
+NET "indata[24]" SLEW = FAST;
+NET "indata[24]" DRIVE = 8;
+NET "indata[24]" LOC = P5;
+NET "indata[25]" IOSTANDARD = LVCMOS33 | PULLDOWN;
+NET "indata[25]" SLEW = FAST;
+NET "indata[25]" DRIVE = 8;
+NET "indata[25]" LOC = P9;
+NET "indata[26]" IOSTANDARD = LVCMOS33 | PULLDOWN;
+NET "indata[26]" SLEW = FAST;
+NET "indata[26]" DRIVE = 8;
+NET "indata[26]" LOC = P10;
+NET "indata[27]" IOSTANDARD = LVCMOS33 | PULLDOWN;
+NET "indata[27]" SLEW = FAST;
+NET "indata[27]" DRIVE = 8;
+NET "indata[27]" LOC = P11;
+NET "indata[28]" IOSTANDARD = LVCMOS33 | PULLDOWN;
+NET "indata[28]" SLEW = FAST;
+NET "indata[28]" DRIVE = 8;
+NET "indata[28]" LOC = P12;
+NET "indata[29]" IOSTANDARD = LVCMOS33 | PULLDOWN;
+NET "indata[29]" SLEW = FAST;
+NET "indata[29]" DRIVE = 8;
+NET "indata[29]" LOC = P15;
+NET "indata[30]" IOSTANDARD = LVCMOS33 | PULLDOWN;
+NET "indata[30]" SLEW = FAST;
+NET "indata[30]" DRIVE = 8;
+NET "indata[30]" LOC = P16;
+NET "indata[31]" IOSTANDARD = LVCMOS33 | PULLDOWN;
+NET "indata[31]" SLEW = FAST;
+NET "indata[31]" DRIVE = 8;
+NET "indata[31]" LOC = P17;
+
+NET "armLEDnn" IOSTANDARD = LVCMOS33;
+NET "armLEDnn" SLEW = SLOW;
+NET "armLEDnn" DRIVE = 12;
+NET "armLEDnn" LOC = P25;
+NET "triggerLEDnn" IOSTANDARD = LVCMOS33;
+NET "triggerLEDnn" SLEW = SLOW;
+NET "triggerLEDnn" DRIVE = 12;
+NET "triggerLEDnn" LOC = P34;
+
+## RS232
+NET "rx" IOSTANDARD = LVCMOS33;
+NET "rx" LOC = "P88";
+NET "tx" IOSTANDARD = LVCMOS33;
+NET "tx" LOC = "P90";
+
+
+## SPI
+NET "dataReady" IOSTANDARD = LVCMOS33;
+NET "dataReady" LOC = P66;
+
+
+## Input timing constraints...
+INST "rx" TNM = "rs232";
+TIMEGRP "rs232" OFFSET = IN 7 ns VALID 9 ns BEFORE "bf_clock" RISING;
+
+INST "indata[0]" TNM = "allins";
+INST "indata[1]" TNM = "allins";
+INST "indata[2]" TNM = "allins";
+INST "indata[3]" TNM = "allins";
+INST "indata[4]" TNM = "allins";
+INST "indata[5]" TNM = "allins";
+INST "indata[6]" TNM = "allins";
+INST "indata[7]" TNM = "allins";
+INST "indata[8]" TNM = "allins";
+INST "indata[9]" TNM = "allins";
+INST "indata[10]" TNM = "allins";
+INST "indata[11]" TNM = "allins";
+INST "indata[12]" TNM = "allins";
+INST "indata[13]" TNM = "allins";
+INST "indata[14]" TNM = "allins";
+INST "indata[15]" TNM = "allins";
+INST "indata[16]" TNM = "allins";
+INST "indata[17]" TNM = "allins";
+INST "indata[18]" TNM = "allins";
+INST "indata[19]" TNM = "allins";
+INST "indata[20]" TNM = "allins";
+INST "indata[21]" TNM = "allins";
+INST "indata[22]" TNM = "allins";
+INST "indata[23]" TNM = "allins";
+INST "indata[24]" TNM = "allins";
+INST "indata[25]" TNM = "allins";
+INST "indata[26]" TNM = "allins";
+INST "indata[27]" TNM = "allins";
+INST "indata[28]" TNM = "allins";
+INST "indata[29]" TNM = "allins";
+INST "indata[30]" TNM = "allins";
+INST "indata[31]" TNM = "allins";
+TIMEGRP "allins" OFFSET = IN 7 ns VALID 9 ns BEFORE "bf_clock" RISING;
+TIMEGRP "allins" OFFSET = IN 7 ns VALID 9 ns BEFORE "bf_clock" FALLING;
+
+## Output timing constraints...
+INST "tx" TNM = "allouts";
+INST "armLEDnn" TNM = "allouts";
+INST "triggerLEDnn" TNM = "allouts";
+INST "dataReady" TNM = "allouts";
+INST "extClockOut" TNM = "allouts";
+INST "extTriggerOut" TNM = "allouts";
+INST "indata[16]" TNM = "allouts";
+INST "indata[17]" TNM = "allouts";
+INST "indata[18]" TNM = "allouts";
+INST "indata[19]" TNM = "allouts";
+INST "indata[20]" TNM = "allouts";
+INST "indata[21]" TNM = "allouts";
+INST "indata[22]" TNM = "allouts";
+INST "indata[23]" TNM = "allouts";
+INST "indata[24]" TNM = "allouts";
+INST "indata[25]" TNM = "allouts";
+INST "indata[26]" TNM = "allouts";
+INST "indata[27]" TNM = "allouts";
+INST "indata[28]" TNM = "allouts";
+INST "indata[29]" TNM = "allouts";
+INST "indata[30]" TNM = "allouts";
+INST "indata[31]" TNM = "allouts";
+TIMEGRP "allouts" OFFSET = OUT 9 ns AFTER "bf_clock";
+
+## Add jitter uncertainy to clock...
+SYSTEM_JITTER = 0.2 ns;
