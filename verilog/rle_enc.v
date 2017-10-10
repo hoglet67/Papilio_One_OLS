@@ -38,14 +38,16 @@
 //    1 : Always.  <value>'s reissued after every <rle-count> field.
 //    2 : Periodic.  <value>'s reissued approx every 256 <rle-count> fields.
 //    3 : Unlimited.  <value>'s can be followed by unlimited numbers of <rle-count> fields.
+//
+// 05/22/2014 - Magnus Karlsson - Fixed the RLE encoder for demux mode
+//
 
-// 
 `timescale 1ns/100ps
 
 module rle_enc(
   clock, reset, 
   enable, arm, 
-  rle_mode, disabledGroups, 
+  rle_mode, demux_mode, disabledGroups, 
   dataIn, validIn, 
   // outputs...
   dataOut, validOut);
@@ -53,6 +55,7 @@ module rle_enc(
 input clock, reset;
 input enable, arm;
 input [1:0] rle_mode;
+input demux_mode;
 input [3:0] disabledGroups;
 input [31:0] dataIn;
 input validIn;
@@ -85,6 +88,7 @@ wire count_zero = ~|count;
 wire count_gt_one = track[1];
 wire count_full = (count==data_mask);
 
+reg demux_mismatch;
 reg mismatch;
 
 wire [30:0] masked_dataIn = dataIn & data_mask;
@@ -115,10 +119,11 @@ begin
 
   // Mask to strip off disabled groups.  Data must have already been
   // aligned (see data_align.v)...
-  next_data_mask = 32'h7FFFFFFF;
+  // Also, if demux mode mask out both values
+  next_data_mask = demux_mode ? 32'h7FFF7FFF : 32'h7FFFFFFF;
   case (mode)
     2'h0 : next_data_mask = 32'h0000007F;
-    2'h1 : next_data_mask = 32'h00007FFF;
+    2'h1 : next_data_mask = demux_mode ? 32'h00007F7F : 32'h00007FFF;
     2'h2 : next_data_mask = 32'h007FFFFF;
   endcase
 end
@@ -168,13 +173,25 @@ begin
 
   mismatch = |(masked_dataIn^last_data); // detect any difference not masked
 
+  if (demux_mode)
+    begin
+      case (mode)
+        2'h0 : demux_mismatch = 0; // not valid in demux mode
+        2'h1 : demux_mismatch = (dataIn[14:8] != dataIn[6:0]);
+        2'h2 : demux_mismatch = 0; // not valid in demux mode
+        2'h3 : demux_mismatch = (dataIn[30:16] != dataIn[14:0]);
+      endcase
+    end
+  else
+    demux_mismatch = 0;
+
   if (active)
     begin
       next_validOut = FALSE;
       next_last_valid = last_valid | validIn;
 
       if (validIn && last_valid)
-        if (!enable || mismatch || count_full) // if mismatch, or counter full, then output count (if count>1)...
+        if (!enable || mismatch || demux_mismatch || count_full) // if mismatch, or counter full, then output count (if count>1)...
           begin
 	    next_active = enable;
             next_validOut = TRUE;
@@ -190,7 +207,7 @@ begin
 
 	    // If mismatch, or rle_mode demands it, set count=0 (which will force reissue of a <value>).
 	    // Otherwise, set to 1 to avoid thre redundant <value> from being output.
-	    next_count = (mismatch || ~rle_mode[1] || ~rle_mode[0] & fieldcount[8]) ? 0 : 1;
+	    next_count = (mismatch || demux_mismatch || ~rle_mode[1] || ~rle_mode[0] & fieldcount[8]) ? 0 : 1;
 	    next_track = next_count[1:0];
           end
         else // match && !count_full

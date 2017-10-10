@@ -39,7 +39,7 @@
 module decoder(
   clock, execute, opcode,
   // outputs...
-  wrtrigmask, wrtrigval, wrtrigcfg,
+  wrtrigmask, wrtrigval, wrtrigcfg, wrtrigedge,
   wrspeed, wrsize, wrFlags,
   wrTrigSelect, wrTrigChain,
   finish_now,
@@ -51,6 +51,7 @@ input [7:0] opcode;
 output [3:0] wrtrigmask;
 output [3:0] wrtrigval;
 output [3:0] wrtrigcfg;
+output [3:0] wrtrigedge;
 output wrspeed;
 output wrsize;
 output wrFlags;
@@ -71,6 +72,7 @@ reg arm_adv, next_arm_adv;
 reg [3:0] wrtrigmask, next_wrtrigmask;
 reg [3:0] wrtrigval, next_wrtrigval;
 reg [3:0] wrtrigcfg, next_wrtrigcfg;
+reg [3:0] wrtrigedge, next_wrtrigedge;
 reg wrspeed, next_wrspeed;
 reg wrsize, next_wrsize;
 reg wrFlags, next_wrFlags;
@@ -92,6 +94,7 @@ begin
   wrtrigmask = next_wrtrigmask;
   wrtrigval = next_wrtrigval;
   wrtrigcfg = next_wrtrigcfg;
+  wrtrigedge = next_wrtrigedge;
   wrspeed = next_wrspeed;
   wrsize = next_wrsize;
   wrFlags = next_wrFlags;
@@ -110,6 +113,7 @@ begin
   next_wrtrigmask = 4'b0000;
   next_wrtrigval = 4'b0000;
   next_wrtrigcfg = 4'b0000;
+  next_wrtrigedge = 4'b0000;
   next_wrspeed = 1'b0;
   next_wrsize = 1'b0;
   next_wrFlags = 1'b0;
@@ -143,15 +147,19 @@ begin
       8'hC0 : next_wrtrigmask[0] = 1'b1;
       8'hC1 : next_wrtrigval[0] = 1'b1;
       8'hC2 : next_wrtrigcfg[0] = 1'b1;
+      8'hC3 : next_wrtrigedge[0] = 1'b1;
       8'hC4 : next_wrtrigmask[1] = 1'b1;
       8'hC5 : next_wrtrigval[1] = 1'b1;
       8'hC6 : next_wrtrigcfg[1] = 1'b1;
+      8'hC7 : next_wrtrigedge[1] = 1'b1;
       8'hC8 : next_wrtrigmask[2] = 1'b1;
       8'hC9 : next_wrtrigval[2] = 1'b1;
       8'hCA : next_wrtrigcfg[2] = 1'b1;
+      8'hCB : next_wrtrigedge[2] = 1'b1;
       8'hCC : next_wrtrigmask[3] = 1'b1;
       8'hCD : next_wrtrigval[3] = 1'b1;
       8'hCE : next_wrtrigcfg[3] = 1'b1;
+      8'hCF : next_wrtrigedge[3] = 1'b1;
     endcase
 end
 endmodule

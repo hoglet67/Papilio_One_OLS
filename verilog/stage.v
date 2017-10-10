@@ -43,13 +43,15 @@
 //
 // 12/29/2010 - Ian Davis (IED) - Verilog version, changed to use LUT based 
 //    masked comparisons, and other cleanups created - mygizmos.org
-// 
+//
+// 05/22/2014 - Magnus Karlsson - Added edge triggers, removerd LUT-based comparisons
+//
 
 `timescale 1ns/100ps
 
 module stage(
   clock, reset, dataIn, validIn,
-  wrenb, din,
+  wrMask, wrValue, wrEdge, 
   wrConfig, config_data,
   arm, demux_mode, level,
   // outputs...
@@ -61,8 +63,9 @@ parameter FALSE = 1'b0;
 input clock, reset;
 input validIn;
 input [31:0] dataIn;		// Channel data...
-input wrenb;			// LUT update write enb
-input [7:0] din;		// LUT update data.  All 8 LUT's are updated simultaneously.
+input wrMask;			// Write trigger mask register
+input wrValue;		// Write trigger value register
+input wrEdge;			// Write trigger edge register
 input wrConfig;			// Write the trigger config register
 input [31:0] config_data;	// Data to write into trigger config regs
 input arm;
@@ -75,6 +78,11 @@ output match;
 //
 // Registers...
 //
+reg [31:0] dataIn_dlyd;
+reg validIn_dlyd;
+reg [31:0] maskRegister, next_maskRegister;
+reg [31:0] valueRegister, next_valueRegister;
+reg [31:0] edgeRegister, next_edgeRegister;
 reg [27:0] configRegister, next_configRegister;
 reg [15:0] counter, next_counter; 
 
@@ -95,17 +103,36 @@ wire [1:0] cfgLevel = configRegister[17:16];
 wire [15:0] cfgDelay = configRegister[15:0];
 
 
+// Remember last data in for edge triggers
+always @ (posedge clock)
+  if (wrConfig) begin
+    dataIn_dlyd <= 0;
+    validIn_dlyd <= 0;
+  end else begin
+    dataIn_dlyd <= validIn ? dataIn : dataIn_dlyd;
+    validIn_dlyd <= validIn | validIn_dlyd;
+  end
 //
-// Handle mask, value & config register write requests
+// Handle mask, value, edge & config register write requests
 //
-always @ (posedge clock) 
-begin
-  configRegister = next_configRegister;
-end
+always @ (posedge clock or posedge reset)
+  if (reset) begin
+    maskRegister <= 0;
+    valueRegister <= 0;
+    edgeRegister <= 0;
+    configRegister <= 0;
+  end else begin
+    maskRegister <= next_maskRegister;
+    valueRegister <= next_valueRegister;
+    edgeRegister <= next_edgeRegister;
+    configRegister <= next_configRegister;
+  end
 
 always @*
 begin
-  #1;
+  next_maskRegister = (wrMask) ? config_data : maskRegister;
+  next_valueRegister = (wrValue) ? config_data : valueRegister;
+  next_edgeRegister = (wrEdge) ? config_data : edgeRegister;
   next_configRegister = (wrConfig) ? config_data[27:0] : configRegister;
 end
 
@@ -115,21 +142,21 @@ end
 //
 wire [31:0] testValue = (cfgSerial) ? shiftRegister : dataIn;
 
-
 //
-// Do LUT table based comparison...
+// Match detector
 //
-wire [7:0] matchLUT;
-trigterm_4bit byte0 (testValue[3:0], clock, wrenb, din[0], dout0, matchLUT[0]);
-trigterm_4bit byte1 (testValue[7:4], clock, wrenb, din[1], dout1, matchLUT[1]);
-trigterm_4bit byte2 (testValue[11:8], clock, wrenb, din[2], dout2, matchLUT[2]);
-trigterm_4bit byte3 (testValue[15:12], clock, wrenb, din[3], dout3, matchLUT[3]);
-trigterm_4bit byte4 (testValue[19:16], clock, wrenb, din[4], dout4, matchLUT[4]);
-trigterm_4bit byte5 (testValue[23:20], clock, wrenb, din[5], dout5, matchLUT[5]);
-trigterm_4bit byte6 (testValue[27:24], clock, wrenb, din[6], dout6, matchLUT[6]);
-trigterm_4bit byte7 (testValue[31:28], clock, wrenb, din[7], dout7, matchLUT[7]);
-wire matchL16 = &matchLUT[3:0];
-wire matchH16 = &matchLUT[7:4];
+wire [31:0] edgeMatch, bitMatch;
+genvar i;
+generate
+  for(i = 0 ; i < 32 ; i = i + 1)
+    begin: bit
+      assign edgeMatch[i] = validIn_dlyd & (valueRegister[i] ? (dataIn[i] & ~dataIn_dlyd[i]) : (~dataIn[i] & dataIn_dlyd[i]));
+      assign bitMatch[i] = ~maskRegister[i] | ((edgeRegister[i] & ~cfgSerial) ? edgeMatch[i] : (~testValue[i] ^ valueRegister[i]));
+    end
+endgenerate
+    
+wire matchL16 = &bitMatch[15:0];
+wire matchH16 = &bitMatch[31:16];
 
 
 //
@@ -137,12 +164,11 @@ wire matchH16 = &matchLUT[7:4];
 //
 always @(posedge clock) 
 begin
-  match32Register = next_match32Register;
+  match32Register <= next_match32Register;
 end
 
 always @*
 begin
-  #1;
   if (demux_mode) 
     next_match32Register = matchL16 | matchH16;
   else next_match32Register = matchL16 & matchH16;
@@ -160,12 +186,11 @@ wire serialChannelH16 = dataIn[{1'b1,cfgChannel[3:0]}];
 // Shift in bit from selected channel whenever dataIn is ready...
 always @(posedge clock) 
 begin
-  shiftRegister = next_shiftRegister;
+  shiftRegister <= next_shiftRegister;
 end
 
 always @*
 begin
-  #1;
   next_shiftRegister = shiftRegister;
   if (validIn)
     if (demux_mode) // in demux mode two bits come in per sample

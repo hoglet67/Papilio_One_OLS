@@ -31,7 +31,11 @@
 //--------------------------------------------------------------------------------
 //
 // 12/29/2010 - Verilog Version + cleanups created by Ian Davis - mygizmos.org
-// 
+//
+// 05/22/2014 - Magnus Karlsson - Added edge triggers to basic trigger,
+//                                removerd LUT-based comparisons in basic trigger,
+//                                made RLE encoder aware of demux mode
+//
 
 `timescale 1ns/100ps
 //`define HEARTBEAT
@@ -82,6 +86,7 @@ wire [31:0] syncedInput;
 wire [3:0] wrtrigmask; 
 wire [3:0] wrtrigval; 
 wire [3:0] wrtrigcfg;
+wire [3:0] wrtrigedge;
 wire wrDivider; 
 wire wrsize; 
 
@@ -230,6 +235,7 @@ decoder decoder(
   .wrtrigmask(wrtrigmask),
   .wrtrigval(wrtrigval),
   .wrtrigcfg(wrtrigcfg),
+  .wrtrigedge(wrtrigedge),
   .wrspeed(wrDivider),
   .wrsize(wrsize),
   .wrFlags(wrFlags),
@@ -307,6 +313,7 @@ trigger trigger(
   .wrMask(wrtrigmask),
   .wrValue(wrtrigval),
   .wrConfig(wrtrigcfg),
+  .wrEdge(wrtrigedge),
   .config_data(config_data),
   .arm(arm_basic),
   .demux_mode(demux_mode),
@@ -371,6 +378,7 @@ rle_enc rle_enc (
   .enable(rleEnable),
   .arm(arm),
   .rle_mode(rle_mode),
+  .demux_mode(demux_mode),
   .disabledGroups(disabledGroups),
   .validIn(aligned_data_valid),
   .dataIn(aligned_data),
