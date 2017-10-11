@@ -83,7 +83,7 @@ output triggerLEDnn;
 
 parameter FREQ = 100000000;  // limited to 100M by onboard SRAM
 parameter TRXSCALE = 28;  // 100M / 28 / 115200 = 31 (5bit)  --If serial communications are not working then try adjusting this number.
-parameter RATE = 115200;  // maximum & base rate
+parameter RATE = 921600;  // maximum & base rate
 
 wire extReset = 1'b0;
 wire [39:0] cmd;
