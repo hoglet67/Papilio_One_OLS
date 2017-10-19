@@ -69,7 +69,7 @@ begin : meta
   `ADDLONG(8'h02, "3", ".", "0", "8"); // FPGA firmware version string
   `ADDBYTE(0);
 
-  `ADDLONG(8'h21,8'h00,8'h00,8'h60,8'h00); // Amount of sample memory (24K)
+  `ADDLONG(8'h21,8'h00,8'h00,8'h80,8'h00); // Amount of sample memory (24K)
   `ADDLONG(8'h23,8'h0B,8'hEB,8'hC2,8'h00); // Max sample rate (200Mhz)
 
   `ADDSHORT(8'h40,8'h20); // Max # of probes

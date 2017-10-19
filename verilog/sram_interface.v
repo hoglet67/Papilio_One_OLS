@@ -31,7 +31,7 @@
 //--------------------------------------------------------------------------------
 //
 
-`define BRAM_MAX_ADDRESS 6*1024-1  // 6K x 36
+`define BRAM_MAX_ADDRESS 8*1024-1  // 6K x 36
 `define BRAM_MAXINDEX 12  // 12:0 = 8K
 `define BRAM_MAXDATA 35
 
@@ -71,7 +71,8 @@ reg [3:0] clkenb, next_clkenb;
 reg [`BRAM_MAXINDEX:0] address, next_address;
 reg [3:0] rdvalid, next_rdvalid;
 
-wire maxaddr = &address[`BRAM_MAXINDEX-2:0] & address[`BRAM_MAXINDEX]; // detect 0x17FF
+//wire maxaddr = &address[`BRAM_MAXINDEX-2:0] & address[`BRAM_MAXINDEX]; // detect 0x17FF
+wire maxaddr = &address[`BRAM_MAXINDEX:0]; // detect 0x1FFF
 wire addrzero = ~|address;
 
 
@@ -195,26 +196,26 @@ end
 
 
 //
-// Instantiate RAM's (each BRAM6kx9bit in turn instantiates three 2kx9's block RAM's)...
+// Instantiate RAM's (each BRAM8kx9bit in turn instantiates four 2kx9's block RAM's)...
 //
 wire [`BRAM_MAXINDEX:0] #1 ram_ADDR = address;
 wire #1 ram_WE = write;
-BRAM6k9bit RAMBG0(
+BRAM8k9bit RAMBG0(
   .CLK(clk), .WE(ram_WE), .EN(clkenb[0]), .ADDR(ram_ADDR),
   .DIN(ram_datain[7:0]), .DOUT(ram_dataout[7:0]),
   .DINP(ram_datain[32]), .DOUTP(ram_dataout[32]));
 
-BRAM6k9bit RAMBG1(
+BRAM8k9bit RAMBG1(
   .CLK(clk), .WE(ram_WE), .EN(clkenb[1]), .ADDR(ram_ADDR),
   .DIN(ram_datain[15:8]), .DOUT(ram_dataout[15:8]),
   .DINP(ram_datain[33]), .DOUTP(ram_dataout[33]));
 
-BRAM6k9bit RAMBG2(
+BRAM8k9bit RAMBG2(
   .CLK(clk), .WE(ram_WE), .EN(clkenb[2]), .ADDR(ram_ADDR),
   .DIN(ram_datain[23:16]), .DOUT(ram_dataout[23:16]),
   .DINP(ram_datain[34]), .DOUTP(ram_dataout[34]));
 
-BRAM6k9bit RAMBG3(
+BRAM8k9bit RAMBG3(
   .CLK(clk), .WE(ram_WE), .EN(clkenb[3]), .ADDR(ram_ADDR),
   .DIN(ram_datain[31:24]), .DOUT(ram_dataout[31:24]),
   .DINP(ram_datain[35]), .DOUTP(ram_dataout[35]));
